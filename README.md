@@ -1,10 +1,10 @@
-# unfollower-twitter
+# unfollower
 
 Unfollow all your looser "friends" on twitter
 
 ## Installation
 
-`pip install unfollower-twitter`
+`pip install unfollower`
 
 ## Usage
 
