@@ -8,8 +8,12 @@ Unfollow all your looser "friends" on twitter
 
 ## Usage
 
-Todo
+usage: app.py [-h] {twitter} ...
 
-## Raw Usage
+positional arguments:
+  {twitter}   [command] help
+    twitter   invokes the twitter related commands
 
-Todo
+optional arguments:
+  -h, --help  show this help message and exit
+
