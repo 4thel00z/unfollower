@@ -63,7 +63,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='terminal theming style echo swag shell console',
+    keywords='terminal social media twitter facebook unfollow',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
