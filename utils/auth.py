@@ -67,10 +67,10 @@ def get_access_token(consumer_key=None, consumer_secret=None):
         raise 'Invalid response from Twitter requesting temp token: {0}'.format(e)
 
     swagprinter.print_cyan('''Your tokens/keys are as follows:
-        consumer_key         = {}
-        consumer_secret      = {}
-        access_token_key     = {}
-        access_token_secret  = {}'''.format(
+        consumer_key         = {0}
+        consumer_secret      = {1}
+        access_token_key     = {2}
+        access_token_secret  = {3}'''.format(
         consumer_key, consumer_secret,
         response.get('oauth_token'), response.get('oauth_token_secret')))
 
