@@ -1,9 +1,12 @@
 from __future__ import print_function
 
-import argparse
-
 from api.unfollower import Unfollower
+from click_monkey_patch import prevent_ascii_env, wrapper_get_terminal_size
 from utils.auth import get_authenticated_api
+import click
+
+prevent_ascii_env()
+wrapper_get_terminal_size()
 
 
 #
@@ -11,38 +14,28 @@ from utils.auth import get_authenticated_api
 #
 
 
-def twitter_handler(args):
-    api = get_authenticated_api()
-    unfollower = Unfollower(api)
-    unfollower.destroyAllFriendships(only_non_follower=args.only_non_followers)
+@click.group(chain=True)
+def main():
+    pass
 
 
+@main.command("twitter")
+@click.option("-u", "--unfollow", help="Unfollow all ( or only non-followers with -o option) followers in your list.", default=False, is_flag=True)
+@click.option("-o", "--only_non_follower", help="Only usable with -u option. Unfollow only non followers.",
+              default=False, is_flag=True)
+@click.option("-p", "--print_on_delete", help="Prints the names of deleted users", default=False, is_flag=True)
+def twitter_handler(unfollow, only_non_follower, print_on_delete):
+    if unfollow:
+        api = get_authenticated_api()
+        unfollower = Unfollower(api)
+        unfollower.destroyAllFriendships(only_non_follower, print_on_delete)
 
-#
-#   Parser setup section
-#
-
-parser = argparse.ArgumentParser()
-
-subParsers = parser.add_subparsers(help='[command] help')
-
-twitterParser = subParsers.add_parser("twitter",
-                                      help="invokes the twitter related commands")
-twitterParser.add_argument_group()
-twitterParser.set_defaults(func=twitter_handler)
-twitterParser.add_argument("-n", "--only-non-followers", default=False, action="store_true")
-
-twitterParser.add_argument("-p", "--print-on-delete", help="Prints the names of deleted users", default=False,
-                           action="store_true")
+        # TODO: add new subcommands
 
 
 #
 #   Main method section
 #
-
-def main():
-    args = parser.parse_args()
-    args.func(args)
 
 
 if __name__ == '__main__':
