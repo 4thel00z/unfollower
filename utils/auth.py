@@ -4,7 +4,7 @@ import webbrowser
 
 import twitter
 from requests_oauthlib import OAuth1Session
-from swag import colors
+from swag import swagprinter
 
 REQUEST_TOKEN_URL = 'https://api.twitter.com/oauth/request_token'
 ACCESS_TOKEN_URL = 'https://api.twitter.com/oauth/access_token'
@@ -20,7 +20,7 @@ def check_keys(keys):
 
 
 def check_env_creds():
-    print("Checking if API credentials are set in the environment variables...")
+    swagprinter.print_yellow("Checking if API credentials are set in the environment variables...")
     has_consumer_keys = check_keys(["consumer_key", "consumer_secret"])
     has_access_token = check_keys(["access_token_key", "access_token_secret"])
 
@@ -37,7 +37,7 @@ def get_access_token(consumer_key=None, consumer_secret=None):
 
     oauth_client = OAuth1Session(consumer_key, client_secret=consumer_secret, callback_uri='oob')
 
-    print('\nRequesting temp token from Twitter...\n')
+    swagprinter.print_cyan('\nRequesting temp token from Twitter...\n')
 
     try:
         response = oauth_client.fetch_request_token(REQUEST_TOKEN_URL)
@@ -46,16 +46,16 @@ def get_access_token(consumer_key=None, consumer_secret=None):
 
     url = oauth_client.authorization_url(AUTHORIZATION_URL)
 
-    print('Trying to start a browser to visit the following Twitter page '
-          'if a browser will not start, copy the URL to your browser '
-          'and retrieve the pincode to be used '
-          'in the next step to obtaining an Authentication Token: \n'
-          '\n\t{0}'.format(url))
+    swagprinter.print_yellow('Trying to start a browser to visit the following Twitter page '
+                             'if a browser will not start, copy the URL to your browser '
+                             'and retrieve the pincode to be used '
+                             'in the next step to obtaining an Authentication Token: \n'
+                             '\n\t{0}'.format(url))
 
     webbrowser.open(url)
     pincode = input('\nEnter your pincode? ')
 
-    print('\nGenerating and signing request for an access token...\n')
+    swagprinter.print_yellow('\nGenerating and signing request for an access token...\n')
 
     oauth_client = OAuth1Session(consumer_key, client_secret=consumer_secret,
                                  resource_owner_key=response.get('oauth_token'),
@@ -66,21 +66,19 @@ def get_access_token(consumer_key=None, consumer_secret=None):
     except ValueError as e:
         raise 'Invalid response from Twitter requesting temp token: {0}'.format(e)
 
-    print('''Your tokens/keys are as follows:
-        consumer_key         = {ck}
-        consumer_secret      = {cs}
-        access_token_key     = {atk}
-        access_token_secret  = {ats}'''.format(
-        ck=consumer_key,
-        cs=consumer_secret,
-        atk=response.get('oauth_token'),
-        ats=response.get('oauth_token_secret')))
+    swagprinter.print_cyan('''Your tokens/keys are as follows:
+        consumer_key         = {}
+        consumer_secret      = {}
+        access_token_key     = {}
+        access_token_secret  = {}'''.format(
+        consumer_key, consumer_secret,
+        response.get('oauth_token'), response.get('oauth_token_secret')))
 
     return (response.get('oauth_token'), response.get('oauth_token_secret'))
 
 
 def print_env_hint():
-    print("""You need to at least provide the consumer_key and consumer_secret !
+    swagprinter.print_purple("""You need to at least provide the consumer_key and consumer_secret !
 
     You can set the credentials through these environment variables:
     - consumer_key
@@ -88,8 +86,9 @@ def print_env_hint():
     - access_token_key
     - access_token_secret
 
-    Or you can provide them now:
     """)
+
+    swagprinter.print_green("Or you can provide them now:")
 
     consumer_key = input("Enter your consumer_key:")
     consumer_secret = input("Enter your consumer_secret:")
@@ -98,14 +97,13 @@ def print_env_hint():
 
 
 def get_authenticated_api(consumer_key=None, consumer_secret=None, access_token_key=None, access_token_secret=None):
-    print("Getting the api ...")
+    swagprinter.print_yellow("Getting the api ...")
 
     if consumer_secret is not None and consumer_key is not None and access_token_key is not None and access_token_secret is not None:
         return twitter.Api(consumer_key=consumer_key,
                            consumer_secret=consumer_secret,
                            access_token_key=access_token_key,
                            access_token_secret=access_token_secret)
-
 
     creds = check_env_creds()
 
